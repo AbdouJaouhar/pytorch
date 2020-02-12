@@ -202,6 +202,15 @@ static inline int64_t getTensorSize(const Tensor& self, int64_t dim) {
   }
 }
 
+static inline Tensor getTensorAlias(const Tensor& self) {
+  auto device = self.device();
+  if (device == at::kCPU || device == at::kCUDA) {
+    return at::native::alias(self);
+  } else {
+    return at::alias(self);
+  }
+}
+
 static inline Tensor applySlice(
     const Tensor& self,
     int64_t dim,
@@ -333,7 +342,7 @@ static inline Tensor handleSimpleTypesInSingleDimIndexingGet(
   } else if (index.is_none()) {
     return self.unsqueeze(0);
   } else if (index.is_ellipsis()) {
-    return at::alias(self);
+    return getTensorAlias(self);
   } else {
     TORCH_INTERNAL_ASSERT(false, "Invalid TensorIndex type");
   }

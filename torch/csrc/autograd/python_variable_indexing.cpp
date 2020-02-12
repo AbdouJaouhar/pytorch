@@ -281,7 +281,7 @@ PyObject* THPVariable_getitem(PyObject* self, PyObject* index) {
   if (variableIndices.empty()) {
     if (sliced.is_same(self_)) {
       // ensure we return a shallow copy for things like x[...]
-      sliced = at::alias(sliced);
+      sliced = at::indexing::getTensorAlias(sliced);
     }
     return THPVariable_Wrap(sliced);
   }
